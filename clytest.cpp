@@ -13,6 +13,7 @@
 #include "ShaderProgram.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include <Mathematics/BSplineCurveFit.h>
 
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), 0.7853981634f, // 45 degrees vs 75 degrees
 (float)VIEWPORT_WIDTH_INITIAL / VIEWPORT_HEIGHT_INITIAL, 0.01f, 2000.0f, 0.0f, -31.74f, 5.4f, VIEWPORT_HEIGHT_INITIAL, VIEWPORT_WIDTH_INITIAL);
@@ -148,11 +149,18 @@ int main()
 		}
 	}
 	*/
+	std::unique_ptr<gte::BSplineCurveFit<float>> mSpline;
+	mSpline = std::make_unique<gte::BSplineCurveFit<float>>(3, static_cast<int>(path.size()),
+		reinterpret_cast<float const*>(&path[0]), 3, 20);
+	float multiplier = 1.0f / (path.size() - 1.0f);
 	for (int i = 0; i < path.size(); i++)
 	{
+		float t = multiplier * i;
+		mSpline->GetPosition(t, reinterpret_cast<float*>(&path[i].x));
 		branchMeshPoints.emplace_back(path[i]);
 		branchMeshIndices.emplace_back(i);
 	}
+
 	Mesh m = Mesh();
 	m.AddIndices(branchMeshIndices);
 	//m.AddNormals(branchMeshNormals);
