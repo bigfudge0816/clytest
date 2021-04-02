@@ -85,5 +85,5 @@ public:
 
     // Inherited Function(s)
     void create() override;
-    GLenum drawMode() override { return GL_TRIANGLE_STRIP; }
+    GLenum drawMode() override { return GL_LINE_STRIP; }
 };

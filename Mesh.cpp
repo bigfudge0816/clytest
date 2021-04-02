@@ -112,8 +112,10 @@ void Mesh::create() {
     glBindBuffer(GL_ARRAY_BUFFER, bufPos);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * positions.size(), positions.data(), GL_STATIC_DRAW);
 
-    //// Normals
+	/*
+    // Normals
     genBufNor();
     glBindBuffer(GL_ARRAY_BUFFER, bufNor);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * normals.size(), normals.data(), GL_STATIC_DRAW);
+	*/
 }

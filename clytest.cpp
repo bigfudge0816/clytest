@@ -100,10 +100,10 @@ int main()
 	glEnable(GL_MULTISAMPLE);
 #endif
 
-	std::vector<glm::vec3> path;
 	Pipe pipe;
 	pipe.buildCircle(1, 10);
 	pipe.buildPath(1, 5, 0.9, 1.1, acos(-1) / 6, 1, 1, 1, 1, 0.17, true);
+	std::vector<glm::vec3> path = pipe.getPathPoints();
 
 	//glm::mat4 branchTransform(1.0);
 	///*branchTransform = {
@@ -116,6 +116,7 @@ int main()
 	std::vector<glm::vec3> branchMeshPoints = std::vector<glm::vec3>();
 	std::vector<glm::vec3> branchMeshNormals = std::vector<glm::vec3>();
 	std::vector<unsigned int> branchMeshIndices = std::vector<unsigned int>();
+	/*
 	int contourCount = pipe.getContourCount();
 	int count = pipe.getContour(0).size();
 	for (int i = 0; i < contourCount; i++)
@@ -146,10 +147,15 @@ int main()
 			branchMeshIndices.emplace_back(first + 1);
 		}
 	}
-
+	*/
+	for (int i = 0; i < path.size(); i++)
+	{
+		branchMeshPoints.emplace_back(path[i]);
+		branchMeshIndices.emplace_back(i);
+	}
 	Mesh m = Mesh();
 	m.AddIndices(branchMeshIndices);
-	m.AddNormals(branchMeshNormals);
+	//m.AddNormals(branchMeshNormals);
 	m.AddPositions(branchMeshPoints);
 	m.create();
 	

@@ -62,7 +62,7 @@ void Pipe::buildPath(float R, float H, float N, float M, float Phi, float bH, fl
 		deltaC *= radius[i - 1] - radius[i];
 		curvature += deltaC;	
 	}
-		
+	/*
 	std::unique_ptr<gte::BSplineCurveFit<float>> mSpline;
 	mSpline = std::make_unique<gte::BSplineCurveFit<float>>(3, static_cast<int>(vertices.size()),
 		reinterpret_cast<float const*>(&vertices[0]), 3, 20);
@@ -100,6 +100,7 @@ void Pipe::buildPath(float R, float H, float N, float M, float Phi, float bH, fl
 		normals_contours.emplace_back(tempnormal);
 		contours.emplace_back(tempcontour);
 	}
+	*/
 	this->path = vertices;
 }
 
