@@ -21,6 +21,7 @@ public:
 	const std::vector<glm::vec3>& getPathPoints() const { return path; }
 	const glm::vec3& getPathPoint(int index) const { return path.at(index); }
 	int getContourCount() const { return (int)contours.size(); }
+	std::vector<float>& getRadius() { return radius; }
 
 	const std::vector< std::vector<glm::vec3> >& getContours() const { return contours; }
 	const std::vector<glm::vec3>& getContour(int index) const { return contours.at(index); }
@@ -29,12 +30,13 @@ public:
 
 	// member functions
 	void buildPath(float R, float H, float N, float M, float Phi, float bH, float E, float L, float f, float deltaA, bool plantType);
-	void buildCircle(float radius, int steps);
+	void buildCircle(float radius, int steps,glm::vec3 point, glm::vec3 dir);
 	void transformFirstContour();
 	std::vector<glm::vec3> projectContour(int fromIndex, int toIndex);
 	std::vector<glm::vec3> computeContourNormal(int pathIndex);
 private:
 	std::vector<glm::vec3> path;
+	std::vector<float> radius;
 	std::vector<glm::vec3> contour;
 	std::vector< std::vector<glm::vec3> > contours;
 	std::vector< std::vector<glm::vec3> > normals_contours;

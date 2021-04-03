@@ -15,6 +15,7 @@
 #include "Camera.h"
 #include <Mathematics/BSplineCurveFit.h>
 
+
 Camera camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), 0.7853981634f, // 45 degrees vs 75 degrees
 (float)VIEWPORT_WIDTH_INITIAL / VIEWPORT_HEIGHT_INITIAL, 0.01f, 2000.0f, 0.0f, -31.74f, 5.4f, VIEWPORT_HEIGHT_INITIAL, VIEWPORT_WIDTH_INITIAL);
 const float camMoveSensitivity = 0.03f;
@@ -102,53 +103,16 @@ int main()
 #endif
 
 	Pipe pipe;
-	pipe.buildCircle(1, 10);
+	//pipe.buildCircle(1, 10);
+
 	pipe.buildPath(1, 5, 0.9, 1.1, acos(-1) / 6, 1, 1, 1, 1, 0.17, true);
 	std::vector<glm::vec3> path = pipe.getPathPoints();
 
-	//glm::mat4 branchTransform(1.0);
-	///*branchTransform = {
-	//	0.00497603044,0.000488875958,1.11164118e-05	,0.000000000,
-	//	-0.00195550360,0.0198834985,0.000906899455,0.000000000,
-	//	1.11164118e-05,- 0.000226724893,0.00499484502,0.000000000,
-	//	- 0.00195550011,0.0198834985,0.000906897767,1.00000000
-	//};*/
-	
+
 	std::vector<glm::vec3> branchMeshPoints = std::vector<glm::vec3>();
 	std::vector<glm::vec3> branchMeshNormals = std::vector<glm::vec3>();
 	std::vector<unsigned int> branchMeshIndices = std::vector<unsigned int>();
-	/*
-	int contourCount = pipe.getContourCount();
-	int count = pipe.getContour(0).size();
-	for (int i = 0; i < contourCount; i++)
-	{
-		std::vector<glm::vec3> contour = pipe.getContour(i);
-		std::vector<glm::vec3> normal = pipe.getNormal(i);
-		for (int j = 0; j <= count; j++)
-		{
-			branchMeshPoints.emplace_back(contour[j%count]);
-			branchMeshNormals.emplace_back(normal[j%count]);
-		}
-	}
-	for (int i = 0; i < contourCount - 1; i++)
-	{
-		int first, second;
-		int j = 0;
-		for (j; j <= count; j++)
-		{
-			first = (i + 1)*(count + 1) + j;
-			second = first - (count + 1);
-
-			branchMeshIndices.emplace_back(first);
-			branchMeshIndices.emplace_back(second);
-		}
-		if (i != contourCount - 2)
-		{
-			branchMeshIndices.emplace_back(second);
-			branchMeshIndices.emplace_back(first + 1);
-		}
-	}
-	*/
+	
 	std::unique_ptr<gte::BSplineCurveFit<float>> mSpline;
 	mSpline = std::make_unique<gte::BSplineCurveFit<float>>(3, static_cast<int>(path.size()),
 		reinterpret_cast<float const*>(&path[0]), 3, 20);
@@ -157,8 +121,26 @@ int main()
 	{
 		float t = multiplier * i;
 		mSpline->GetPosition(t, reinterpret_cast<float*>(&path[i].x));
-		branchMeshPoints.emplace_back(path[i]);
+		glm::vec3 dir;
+		if (i < path.size()-1)
+			dir = path[i + 1] - path[i];		
+		else
+			dir =  path[i] - path[i-1];
+
+		dir = glm::normalize(dir);
+		pipe.buildCircle(pipe.getRadius()[i], 10, path[i],dir);
+		branchMeshPoints.insert(branchMeshPoints.end(),pipe.getContour(i).begin(), pipe.getContour(i).end());
+	}
+
+	for (int i = 0; i < branchMeshPoints.size()-10; i++)
+	{
 		branchMeshIndices.emplace_back(i);
+		branchMeshIndices.emplace_back(i+10);
+		if ((i + 1) % 10 == 0)
+		{
+			branchMeshIndices.emplace_back(i-9);
+			branchMeshIndices.emplace_back(i+1);
+		}
 	}
 
 	Mesh m = Mesh();
